@@ -1,32 +1,53 @@
-        Queue<WordNode> queue = new LinkedList<WordNode>();
-        queue.offer(new WordNode(start, 1));
-        dictV.add(end);
-        Set<String> set = new HashSet<String>(dictV);
+/**
+ * Definition for binary tree
+ * class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) {
+ *      val = x;
+ *      left=null;
+ *      right=null;
+ *     }
+ * }
+ */
+public class Solution {
+    public ArrayList<ArrayList<Integer>> levelOrder(TreeNode a) {
+        
+        ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        
+        if(a == null)
+            return result;
+        
+        int currentLevelNum = 1;
+        int nextLevelNum = 0;
+        queue.offer(a);
+        ArrayList<Integer> levelList = new ArrayList<Integer>();
         while(!queue.isEmpty()){
-            WordNode top = queue.poll();
-            String word = top.word;
+            TreeNode node = queue.poll();
+            currentLevelNum--;
+            levelList.add(node.val);
             
-            //if reached end word return number of steps till then
-            if(word.equals(end))
-                return top.numSteps;
+            if(node.left != null){
+                queue.offer(node.left);
+                nextLevelNum++;
+            }
             
-            char[] arr = word.toCharArray();
-            for(int i =0; i < arr.length; i++){
-                for(char c = 'a'; c <= 'z'; c++){
-                    char temp = arr[i];
-                    if(arr[i] != c)
-                        arr[i] = c;
-                    //For each character change compare the new word in dictionary
-                    String newWord = new String(arr);
-                    if(set.contains(newWord)){
-                        queue.offer(new WordNode(newWord, top.numSteps + 1));
-                        set.remove(newWord);
-                    }
-                    arr[i] = temp;
-                    
-                }
+            if(node.right != null){
+                queue.offer(node.right);
+                nextLevelNum++;
+            }
+            
+            if(currentLevelNum == 0){
+                currentLevelNum = nextLevelNum;
+                nextLevelNum = 0;
+                result.add(new ArrayList<Integer>(levelList));
+                levelList.clear();
             }
             
         }
-                  
-        return 0;
+        
+        return result;
+    }
+}
